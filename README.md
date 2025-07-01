@@ -1,12 +1,12 @@
 # LMC_AURIGA Benchmark Suite
 
-This project provides a minimal framework for computing dark-matter speed distributions from the Auriga simulations. The code demonstrates three progressively faster implementations of the same analysis pipeline:
+This project contains three implementations for computing dark-matter speed distributions from the Auriga simulations. These mirror the versions used in Smith‑Orlik et al. (2023):
 
 1. **Pandas/NumPy baseline** – straightforward CPU version
 2. **Numba parallel CPU** – uses `@njit(parallel=True)`
 3. **CUDA GPU** – accelerates the heavy computations on an NVIDIA GPU
 
-The goal is to reproduce the velocity distributions used in Smith‑Orlik et al. (2023) and to compare runtimes across these implementations.
+Raw simulation data are **not** included. Place all HDF5 snapshots and Sun-position tables under the `data/` directory (which is ignored by Git).
 
 ## Repository Layout
 
@@ -48,3 +48,9 @@ pytest -q
 ```
 
 The current test suite only covers the `anisotropy` helper but ensures the package can be imported.
+
+## Next Steps
+
+1. Refactor the notebooks so that halo IDs and snapshot lists become parameters of functions under `src/`.
+2. Ensure the three implementations expose a consistent API (e.g. `snapshot()` and `run_all()` helpers).
+3. Provide a dispatcher script in `scripts/` that selects the baseline, CPU, or GPU pipeline at runtime.
