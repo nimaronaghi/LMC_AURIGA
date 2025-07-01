@@ -1,4 +1,4 @@
-﻿# LMC_AURIGA (Halo Benchmark)
+# LMC_AURIGA (Halo Benchmark)
 
 This repo will hold three implementations (baseline, CPU-parallel, GPU) for “halo” benchmarks on Auriga data.
 - All raw data (HDF5, Sun-position) must live under **data/** (git-ignored).
@@ -19,6 +19,30 @@ pip install -r requirements.txt
 
 ## Benchmark Results
 
+The table below summarizes the average runtimes measured on Google Colab (Intel Xeon CPU and NVIDIA T4 GPU) for halos 49–70 and snapshots 102 and 121–176.
+
+| Method                | Avg Total Runtime (s) | Std Dev (s) | Avg per Snapshot (s) | Std Dev per Snapshot (s) |
+|-----------------------|----------------------:|------------:|---------------------:|-------------------------:|
+| Pandas/NumPy          | 713.62                | 6.30        | 0.612                | 0.0054                   |
+| Numba CPU (parallel)  | 399.49                | 2.15        | 0.343                | 0.0018                   |
+| CUDA (GPU)            | 92.47                 | 1.75        | 0.079                | 0.0015                   |
+
+## Testing
+
+Run the unit tests with:
+
+```bash
+pytest -q
+```
+
+The current test suite only covers the `anisotropy` helper but ensures the package can be imported.
+
+## Next Steps
+
+1. Refactor the notebooks so that halo IDs and snapshot lists become parameters of functions under `src/`.
+2. Ensure the three implementations expose a consistent API (e.g. `snapshot()` and `run_all()` helpers).
+3. Provide a dispatcher script in `scripts/` that selects the baseline, CPU, or GPU pipeline at runtime.
+=======
 The CUDA implementation significantly reduces runtime when computing speed distributions across the Auriga snapshots.
 
 | Method | Avg Total Runtime (s) | Std Dev (s) | Avg per Snapshot (s) | Std Dev per Snapshot (s) |
