@@ -6,6 +6,17 @@ This repo will hold three implementations (baseline, CPU-parallel, GPU) for “h
 - Examples and final report notebooks live in **examples/** and **notebooks/**.
 - A static HTML/PDF of the final report will go under **docs/**.
 
+## Installation
+
+This project supports **Python 3.10 or later**. The recommended approach is to
+use a virtual environment:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
 ## Benchmark Results
 
 The CUDA implementation significantly reduces runtime when computing speed distributions across the Auriga snapshots.
