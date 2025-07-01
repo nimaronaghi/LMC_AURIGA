@@ -6,6 +6,18 @@ This repo will hold three implementations (baseline, CPU-parallel, GPU) for “h
 - Examples and final report notebooks live in **examples/** and **notebooks/**.
 - A static HTML/PDF of the final report will go under **docs/**.
 
+## Benchmark Results
+
+The CUDA implementation significantly reduces runtime when computing speed distributions across the Auriga snapshots.
+
+| Method | Avg Total Runtime (s) | Std Dev (s) | Avg per Snapshot (s) | Std Dev per Snapshot (s) |
+|-------|----------------------|-------------|----------------------|--------------------------|
+| Pandas/NumPy | 713.62 | 6.30 | 0.612 | 0.0054 |
+| Numba CPU (parallel) | 399.49 | 2.15 | 0.343 | 0.0018 |
+| CUDA (GPU) | 92.47 | 1.75 | 0.079 | 0.0015 |
+
+See `examples/benchmark.ipynb` for a runnable demonstration of the pipeline.
+
 ## Next Steps
 
 1. Refactor each notebook’s hard-coded halo IDs & snapshot lists into parameterized functions under src/.  
