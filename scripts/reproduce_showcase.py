@@ -25,9 +25,9 @@ def main():
         snapshot = output / "synthetic.hdf5"
         write_synthetic(snapshot, n_particles=20000, seed=42)
         analyze_snapshot(snapshot, output)
-        make_figures(output)
+        figures = make_figures(output)
         for name in ("speed_distribution.csv", "observables.csv", "anisotropy.csv", "report.json",
-                     "scientific_review.pdf", "scientific_review.svg", "scientific_review.png", "caption.txt"):
+                     *(path.name for path in figures)):
             shutil.copy2(output / name, destination / name)
     print(destination)
 

@@ -4,9 +4,11 @@ Reproducible particle-velocity analysis: explicit physical units and reference f
 
 The public demonstration is a **synthetic kinematic fixture**, generated locally from prescribed distributions. It contains no Auriga particles and makes no prediction for the real Large Magellanic Cloud (LMC). The project develops analysis methods motivated by [LMC effects on dark-matter direct detection](https://arxiv.org/abs/2302.04281); it does not reproduce that paper's results.
 
-![Synthetic speed distribution, strict speed tail, and mean inverse speed](examples/showcase/scientific_review.png)
+![Synthetic speed distribution and mean inverse speed, with contribution comparison panels](examples/showcase/scientific_review.png)
 
 The [showcase](examples/showcase/) includes the underlying CSV tables, configuration and source hashes, and [PDF](examples/showcase/scientific_review.pdf)/[SVG](examples/showcase/scientific_review.svg) figures. Its 20,000-particle, seed-42 fixture has a Gaussian host and a 5% tagged stream before spatial selection. Both labels are bookkeeping for a toy model. [Methods and limitations](docs/methods.md) explain exactly what each curve measures.
+
+The figure presentation follows the panel hierarchy and population colours of figures 4 and 6 in the [LMC paper](https://arxiv.org/abs/2302.04281): compact upper panels, shared-axis comparison strips, and black/red/blue curves. It retains this package's observer frame and common normalization, with no invented error bands. The [supplementary speed-tail figure](examples/showcase/speed_tail.pdf) completes the observable set. See the [figure specification](docs/figure_style.md) for exact conventions.
 
 ## Run the demonstration
 
@@ -34,7 +36,7 @@ Choose a fresh output directory when repeating `demo` or `analyze`; existing sna
 | `observables.csv` | Strict speed-tail probability and empirical mean inverse speed, evaluated directly from particles |
 | `anisotropy.csv` | Centered, weighted host-frame velocity anisotropy for each component |
 | `report.json` | Selection, observer basis, phases, weighting, histogram overflow, environment, input hash, and code hashes |
-| `scientific_review.pdf/.svg/.png`, `caption.txt` | Three-panel scientific figure and a caption describing its assumptions |
+| `scientific_review.pdf/.svg/.png`, `speed_tail.pdf/.svg/.png`, `caption.txt` | Main figure with comparison panels, supplementary tail figure, and scientific caption |
 
 Figures can be regenerated from saved tables without rereading particle data:
 

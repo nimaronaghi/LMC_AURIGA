@@ -15,7 +15,7 @@ import xml.etree.ElementTree as ET
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from lmc_auriga.plotting import make_figures, _positive_or_nan
+from lmc_auriga.plotting import make_figures, _positive_or_nan, _safe_ratio
 
 
 HAS_PLOTTING = all(importlib.util.find_spec(name) is not None for name in ("matplotlib", "PIL"))
@@ -61,7 +61,7 @@ class ScientificPlotTests(unittest.TestCase):
             report_path.write_text(json.dumps(report), encoding="utf-8")
             with patch.object(Figure, "savefig") as export:
                 make_figures(directory)
-            self.assertEqual(export.call_count, 3)
+            self.assertEqual(export.call_count, 6)
             caption = (Path(directory) / "caption.txt").read_text(encoding="utf-8")
             self.assertIn("8–8 kpc", caption)
 
@@ -80,51 +80,81 @@ class ScientificPlotTests(unittest.TestCase):
             self.assertEqual({path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in sources}, before)
             root = Path(directory)
             with Image.open(root / "scientific_review.png") as image:
-                self.assertEqual(image.size, (4320, 1620))
+                self.assertEqual(image.size, (4320, 2640))
                 for dpi in image.info["dpi"]:
                     self.assertAlmostEqual(dpi, 600, delta=.02)
                 self.assertIn("SYNTHETIC DEMONSTRATION", image.info["Title"])
+            with Image.open(root / "speed_tail.png") as image:
+                self.assertEqual(image.size, (2100, 1920))
+                for dpi in image.info["dpi"]:
+                    self.assertAlmostEqual(dpi, 600, delta=.02)
             svg = ET.parse(root / "scientific_review.svg").getroot()
             self.assertAlmostEqual(float(svg.attrib["width"].removesuffix("pt")), 518.4, places=5)
-            self.assertAlmostEqual(float(svg.attrib["height"].removesuffix("pt")), 194.4, places=5)
+            self.assertAlmostEqual(float(svg.attrib["height"].removesuffix("pt")), 316.8, places=5)
             box = re.search(rb"/MediaBox\s*\[\s*([\d.+-]+)\s+([\d.+-]+)\s+([\d.+-]+)\s+([\d.+-]+)\s*\]",
                             (root / "scientific_review.pdf").read_bytes())
             self.assertIsNotNone(box)
             x0, y0, x1, y1 = map(float, box.groups())
             self.assertAlmostEqual(x1 - x0, 518.4, places=5)
-            self.assertAlmostEqual(y1 - y0, 194.4, places=5)
+            self.assertAlmostEqual(y1 - y0, 316.8, places=5)
+            self.assertEqual(len(outputs), 7)
             caption = (root / "caption.txt").read_text(encoding="utf-8")
             self.assertIn("not observational or Auriga simulation results", caption)
             self.assertIn("same total selected population weight", caption)
             self.assertIn("Exact zeros are omitted", caption)
 
-    def test_logarithmic_panels_preserve_values_and_processed_data_label(self):
+    def test_scaled_observables_and_comparison_panels_preserve_scientific_meaning(self):
         from matplotlib.figure import Figure
 
         snapshots = []
 
         def capture(figure, *args, **kwargs):
-            snapshots.append({"heading": figure._suptitle.get_text(),
-                              "scales": [axis.get_yscale() for axis in figure.axes],
-                              "threshold_domain": figure.axes[1].get_xlim(),
-                              "tail": [line.get_ydata().copy() for line in figure.axes[1].lines]})
+            snapshot = {"heading": figure._suptitle,
+                        "annotations": [text.get_text() for axis in figure.axes for text in axis.texts],
+                        "scales": [axis.get_yscale() for axis in figure.axes]}
+            if len(figure.axes) == 4:
+                snapshot.update(eta=figure.axes[1].lines[0].get_ydata().copy(),
+                                pdf=figure.axes[0].patches[0].get_data().values.copy(),
+                                pdf_ratio=figure.axes[2].patches[0].get_data().values.copy(),
+                                ratio_baseline=figure.axes[2].patches[0].get_data().baseline,
+                                eta_ratio=figure.axes[3].lines[0].get_ydata().copy())
+            else:
+                snapshot.update(threshold_domain=figure.axes[0].get_xlim(),
+                                tail=[line.get_ydata().copy() for line in figure.axes[0].lines])
+            snapshots.append(snapshot)
 
         with tempfile.TemporaryDirectory() as directory:
             write_fixture(directory, "processed test fixture")
             with patch.object(Figure, "savefig", autospec=True, side_effect=capture):
                 make_figures(directory)
             caption = (Path(directory) / "caption.txt").read_text(encoding="utf-8")
-        self.assertIn("PROCESSED PARTICLE DATA", snapshots[0]["heading"])
-        self.assertEqual(snapshots[0]["scales"], ["linear", "log", "log"])
-        self.assertEqual(snapshots[0]["threshold_domain"], (0, 300))
-        np.testing.assert_allclose(snapshots[0]["tail"][0][:3], [1, .8, .3])
-        self.assertTrue(all(np.isnan(values[-1]) for values in snapshots[0]["tail"]))
+        self.assertIsNone(snapshots[0]["heading"])
+        self.assertIn("Processed sample", snapshots[0]["annotations"])
+        self.assertEqual(snapshots[0]["scales"], ["linear", "log", "linear", "linear"])
+        np.testing.assert_allclose(snapshots[0]["pdf"], [2, 5, 3])
+        np.testing.assert_allclose(snapshots[0]["pdf_ratio"], [2, 5/3, 3])
+        self.assertIsNone(snapshots[0]["ratio_baseline"])
+        np.testing.assert_allclose(snapshots[0]["eta"][:3], [128/15, 68/15, 1.2])
+        np.testing.assert_allclose(snapshots[0]["eta_ratio"][:3], [31/33, 8/9, 2])
+        self.assertTrue(np.isnan(snapshots[0]["eta_ratio"][-1]))
+        self.assertEqual(snapshots[3]["threshold_domain"], (0, 300))
+        np.testing.assert_allclose(snapshots[3]["tail"][0][:3], [1, .8, .3])
+        self.assertTrue(all(np.isnan(values[-1]) for values in snapshots[3]["tail"]))
         np.testing.assert_array_equal(_positive_or_nan([1e-20, 1]), [1e-20, 1])
         self.assertTrue(np.isnan(_positive_or_nan([0])[0]))
         self.assertIn("declared provenance: processed test fixture", caption)
         self.assertIn("Local circular speed vc: not recorded", caption)
         self.assertIn("Angular selection: not recorded", caption)
         self.assertIn("Basis rows (local Galactic U,V,W axes in simulation coordinates): not recorded", caption)
+
+    def test_undefined_ratios_are_omitted_without_a_denominator_floor(self):
+        numerator = np.array([0., 2., 3., 1e-20])
+        denominator = np.array([0., 1., 0., 1e-20])
+        before = denominator.copy()
+        result = _safe_ratio(numerator, denominator)
+        self.assertTrue(np.isnan(result[[0, 2]]).all())
+        np.testing.assert_array_equal(result[[1, 3]], [2, 1])
+        np.testing.assert_array_equal(denominator, before)
 
     def test_caption_records_actual_observer_orientation_and_angular_selection(self):
         from matplotlib.figure import Figure
