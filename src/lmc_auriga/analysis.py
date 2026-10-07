@@ -18,24 +18,38 @@ COMPONENTS = ("total", "mw", "lmc")
 
 
 class _Moments:
-    """Merge centered weighted moments, avoiding subtraction of large squares."""
+    """Merge weighted moments relative to one observed velocity reference."""
 
     def __init__(self):
         self.n = 0
         self.weight = 0.0
-        self.mean = np.zeros(3)
+        self._anchor = None
+        self._mean_offset = np.zeros(3)
         self.m2 = np.zeros(3)
+
+    @property
+    def mean(self):
+        if self._anchor is None:
+            return np.zeros(3)
+        return self._anchor + self._mean_offset
 
     def update(self, values, weights):
         if not len(values):
             return
+        if self._anchor is None:
+            self._anchor = values[0].copy()
+        # Keep the same observed reference across chunks. A constant component
+        # then has exactly zero offsets, even if its weighted absolute mean
+        # would round away from the observed value. Small real dispersions
+        # remain measurable without an arbitrary zero-variance tolerance.
+        offsets = values - self._anchor
         weight = float(weights.sum())
-        mean = np.average(values, axis=0, weights=weights)
-        m2 = np.sum(weights[:, None] * (values - mean) ** 2, axis=0)
-        delta = mean - self.mean
+        mean = np.average(offsets, axis=0, weights=weights)
+        m2 = np.sum(weights[:, None] * (offsets - mean) ** 2, axis=0)
+        delta = mean - self._mean_offset
         combined = self.weight + weight
         self.m2 += m2 + delta ** 2 * (self.weight / combined) * weight
-        self.mean += delta * (weight / combined)
+        self._mean_offset += delta * (weight / combined)
         self.weight = combined
         self.n += len(values)
 

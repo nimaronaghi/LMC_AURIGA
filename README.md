@@ -61,6 +61,8 @@ An [explicit legacy importer](docs/data_contract.md#already-processed-legacy-fil
 
 ## Performance and validation
 
+The [scientific audit dated 7 October 2026](docs/scientific-audit.md) documents the physical checks, a constant-dispersion roundoff correction, figure inspection, and the interpretation limits highlighted by recent research.
+
 ```sh
 python -m lmc_auriga benchmark --output results/benchmark --counts 1000 10000 100000 --repeats 5 --backends numpy
 ```

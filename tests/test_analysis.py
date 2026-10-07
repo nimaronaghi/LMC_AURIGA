@@ -124,3 +124,50 @@ def test_zero_relative_speed_obeys_strict_eta_policy(tmp_path, monkeypatch):
     assert observables["total_tail"][0] == pytest.approx(1/4)
     assert observables["total_eta"][0] == pytest.approx(1/8)
     np.testing.assert_allclose(_table(output, "speed_distribution.csv")["total_pdf"], [3/4, 0, 1/4, 0])
+
+
+@pytest.mark.parametrize("radial", [0.1, 123.456, 220.1])
+@pytest.mark.parametrize("weights", [np.ones(3), np.array([1., 2., 3.]), np.array([.1, .2, .3])])
+@pytest.mark.parametrize("chunk_size", [1, 2, 3])
+def test_constant_radial_component_has_exactly_zero_weighted_dispersion(radial, weights, chunk_size):
+    # These decimal constants previously acquired a spurious radial variance
+    # when the weighted absolute mean rounded away from the observed value.
+    values = np.column_stack((np.full(3, radial), [-1., 0., 1.], [0., 1., 0.]))
+    moments = analysis._Moments()
+    for start in range(0, len(values), chunk_size):
+        moments.update(values[start:start + chunk_size], weights[start:start + chunk_size])
+    assert moments.m2[0] == 0
+    assert np.all(moments.m2[1:] > 0)
+    assert moments.mean[0] == radial
+    assert moments.beta() is None
+
+
+@pytest.mark.parametrize("chunk_size", [1, 2, 3])
+def test_small_real_weighted_dispersion_survives_large_streaming_offsets(chunk_size):
+    # Exact binary inputs retain a radial spread far below a relative 1e-12
+    # tolerance on the streaming mean. Q_theta = 4 Q_r, Q_phi = 0, so beta=-1.
+    step = 2.0 ** -28
+    baseline = np.array([2.0 ** 20, -2.0 ** 18, 2.0 ** 19])
+    values = baseline + step * np.array([[-1., -2., 0.], [0., 0., 0.], [1., 2., 0.]])
+    weights = np.array([1., 2., 3.])
+    moments = analysis._Moments()
+    for start in range(0, len(values), chunk_size):
+        moments.update(values[start:start + chunk_size], weights[start:start + chunk_size])
+    expected_qr = (10 / 3) * step ** 2
+    np.testing.assert_allclose(moments.m2, [expected_qr, 4 * expected_qr, 0], rtol=1e-14, atol=0)
+    assert moments.beta() == pytest.approx(-1, abs=1e-14)
+
+
+def test_snapshot_reports_undefined_beta_for_zero_radial_dispersion_across_chunks(tmp_path):
+    # At +x, v_r=v_x, while both tangential components vary independently.
+    velocities = np.tile([[.1, -1., 0.], [.1, 0., 1.], [.1, 1., 0.]], (2, 1))
+    snapshot = _snapshot(tmp_path / "constant-radial.h5", np.tile([8., 0., 0.], (6, 1)),
+                         velocities, [-1, -1, -1, 1, 1, 1], [1, 2, 3, 1, 2, 3])
+    for chunk_size in (1, 2, 3, 6):
+        report = analysis.analyze_snapshot(snapshot, tmp_path / f"constant-radial-{chunk_size}",
+                                           chunk_size=chunk_size, phase_count=1,
+                                           speed_max=500, bin_width=25)
+        for row in report["anisotropy"]:
+            assert row["n"] >= 3
+            assert row["beta"] is None
+            assert row["mean_spherical_km_s"][0] == .1
