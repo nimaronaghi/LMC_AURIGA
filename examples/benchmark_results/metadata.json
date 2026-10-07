@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "status": "completed",
+  "created_at_utc": "2026-10-07T07:31:08.799093+00:00",
+  "particle_counts": [
+    1000,
+    10000,
+    100000
+  ],
+  "repeats": 5,
+  "seed": 42,
+  "n_phases": 12,
+  "requested_backends": [
+    "numpy",
+    "numba"
+  ],
+  "measured_backends": [
+    "numpy",
+    "numba"
+  ],
+  "skipped_backends": [],
+  "dtype": "float64",
+  "velocity_unit": "km/s (synthetic fixture)",
+  "fixture": "Gaussian particle velocities with component sigma=160; synthetic observer velocities (30*cos(phi), 220+30*sin(phi), 7), phi=2*pi*j/12",
+  "fixtures": [
+    {
+      "n_particles": 1000,
+      "sha256": "ce370e3f03da13e8a9a0254944894dfd5291e6c4ddc71d3858346e21e01828cd"
+    },
+    {
+      "n_particles": 10000,
+      "sha256": "4c72dd1c73159378b8fca5fefd54c46848972baed8d92c14b9299ac00baa9ada"
+    },
+    {
+      "n_particles": 100000,
+      "sha256": "881ae3ee04c06228ae6f263279b9cc0a6b0d279e608022b068f648db420fdcb7"
+    }
+  ],
+  "fixture_hash_encoding": "SHA256 of JSON velocity/observer shapes then C-order little-endian float64 arrays",
+  "timing_scope": "speed kernel on prevalidated float64 arrays; includes output allocation; excludes input generation/validation, JIT warm-up, parity comparison and I/O",
+  "warmup_calls_per_backend_and_size": 1,
+  "backend_order": "rotate starting backend each repeat",
+  "reference": "NumPy float64 kernel; separate untimed reference evaluation",
+  "parity_tolerance": {
+    "rtol": 1e-12,
+    "atol": 1e-12
+  },
+  "clock": "time.perf_counter",
+  "clock_resolution_seconds": 1e-07,
+  "backend_source_sha256": "9a183dae5056f5b8b86e7007e71c8b032c1a9617b4f61765951e5e76688babb1",
+  "benchmark_source_sha256": "7cdfe87c298a0db451d305a7464a02cf50e29dec736600337be3c848b85563cd",
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.5.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "logical_cpu_count": 24,
+    "numba": "0.68.0",
+    "numba_threads": 24
+  },
+  "summary": [
+    {
+      "n_particles": 1000,
+      "n_phases": 12,
+      "backend": "numpy",
+      "mean_seconds": 0.00033957997802644966,
+      "median_seconds": 0.00033819995587691665,
+      "stdev_seconds": 1.0688635698749103e-05,
+      "min_seconds": 0.0003293000045232475,
+      "max_seconds": 0.00035669998032972217,
+      "max_absolute_error": 0.0,
+      "max_relative_error": 0.0
+    },
+    {
+      "n_particles": 1000,
+      "n_phases": 12,
+      "backend": "numba",
+      "mean_seconds": 4.421999910846353e-05,
+      "median_seconds": 4.6600005589425564e-05,
+      "stdev_seconds": 5.910351997292761e-06,
+      "min_seconds": 3.489997470751405e-05,
+      "max_seconds": 4.9200025387108326e-05,
+      "max_absolute_error": 0.0,
+      "max_relative_error": 0.0
+    },
+    {
+      "n_particles": 10000,
+      "n_phases": 12,
+      "backend": "numpy",
+      "mean_seconds": 0.0024510199902579187,
+      "median_seconds": 0.0027397999656386673,
+      "stdev_seconds": 0.00042758362179334803,
+      "min_seconds": 0.0019230000325478613,
+      "max_seconds": 0.0027735999901778996,
+      "max_absolute_error": 0.0,
+      "max_relative_error": 0.0
+    },
+    {
+      "n_particles": 10000,
+      "n_phases": 12,
+      "backend": "numba",
+      "mean_seconds": 0.0003315999754704535,
+      "median_seconds": 0.0003523999475874007,
+      "stdev_seconds": 4.2807602124607395e-05,
+      "min_seconds": 0.000262899964582175,
+      "max_seconds": 0.0003671000013127923,
+      "max_absolute_error": 0.0,
+      "max_relative_error": 0.0
+    },
+    {
+      "n_particles": 100000,
+      "n_phases": 12,
+      "backend": "numpy",
+      "mean_seconds": 0.025052200013305992,
+      "median_seconds": 0.025382600026205182,
+      "stdev_seconds": 0.001983688161448168,
+      "min_seconds": 0.02248059998964891,
+      "max_seconds": 0.02774890000000596,
+      "max_absolute_error": 0.0,
+      "max_relative_error": 0.0
+    },
+    {
+      "n_particles": 100000,
+      "n_phases": 12,
+      "backend": "numba",
+      "mean_seconds": 0.0021367000183090566,
+      "median_seconds": 0.0019064000225625932,
+      "stdev_seconds": 0.00039734878210667305,
+      "min_seconds": 0.0018106000497937202,
+      "max_seconds": 0.002626200031954795,
+      "max_absolute_error": 0.0,
+      "max_relative_error": 0.0
+    }
+  ],
+  "samples_file": "raw_timings.csv"
+}

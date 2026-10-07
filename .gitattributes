@@ -1,0 +1,5 @@
+*.py text eol=lf
+docs/legacy/** -text whitespace=cr-at-eol
+examples/showcase/** -text whitespace=cr-at-eol
+examples/showcase/**/*.svg -diff
+examples/benchmark_results/** -text whitespace=cr-at-eol

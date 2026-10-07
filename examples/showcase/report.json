@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "package_version": "0.1.0",
+  "input_sha256": "38c7a6376d77f45ef56521f77b7a296e892b2c454e9408f3605f579aa9e0d9be",
+  "input_metadata": {
+    "frame": "galactocentric",
+    "generator": "lmc_auriga.synthetic.write_synthetic",
+    "generator_source_sha256": "191ff74cd8e6619d8a86bbbd3bf013827b17a6c26da3aa77a3f54badd2a0bf1b",
+    "h5py_version": "3.16.0",
+    "lmc_count": 1000,
+    "lmc_fraction_realized": 0.05,
+    "lmc_fraction_requested": 0.05,
+    "model_scope": "Toy kinematic fixture; not a gravitational simulation, equilibrium model, escape-truncated distribution, or prediction of the real LMC",
+    "mw_count": 19000,
+    "n_particles": 20000,
+    "numpy_version": "2.5.3",
+    "parameters_json": "{\"lmc_dispersion_km_s\": [70.0, 50.0, 50.0], \"lmc_fraction_requested\": 0.05, \"lmc_mean_km_s\": [0.0, -300.0, 80.0], \"mw_dispersion_km_s\": [155.0, 155.0, 155.0], \"mw_mean_km_s\": [0.0, 0.0, 0.0], \"n_particles\": 20000, \"position_distribution\": \"uniform in shell volume; isotropic directions\", \"radial_shell_kpc\": [4.0, 14.0], \"seed\": 42, \"tagged_count_rounding\": \"nearest integer; half ties round upward\", \"weight_per_particle\": 1.0}",
+    "position_unit": "kpc",
+    "provenance": "synthetic",
+    "random_generator": "PCG64",
+    "schema_version": 1,
+    "seed": 42,
+    "source": "Prescribed Gaussian halo plus tagged stream; generated locally, no Auriga data used",
+    "velocity_unit": "km/s",
+    "weighting": "equal particle weights; number-weighted synthetic demonstration",
+    "has_weights": true
+  },
+  "selected_count": 5797,
+  "selected_weight": 5797.0,
+  "configuration": {
+    "shell": [
+      6.0,
+      10.0
+    ],
+    "cone_axis": null,
+    "half_angle_deg": 45.0,
+    "vc_km_s": 220.0,
+    "basis_rows": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "phase_count": 12,
+    "phases": [
+      0.0,
+      0.08333333333333333,
+      0.16666666666666666,
+      0.25,
+      0.3333333333333333,
+      0.4166666666666667,
+      0.5,
+      0.5833333333333334,
+      0.6666666666666666,
+      0.75,
+      0.8333333333333334,
+      0.9166666666666666
+    ],
+    "chunk_size": 100000,
+    "speed_max_km_s": 1000.0,
+    "bin_width_km_s": 20.0,
+    "backend": "numpy"
+  },
+  "normalization": "All components divided by total selected weight; arithmetic mean over equally spaced annual phases.",
+  "weighting": "supplied positive weights",
+  "histogram_overflow_fraction": {
+    "total": 0.0,
+    "mw": 0.0,
+    "lmc": 0.0
+  },
+  "anisotropy": [
+    {
+      "component": "total",
+      "n": 5797,
+      "weight": 5797.0,
+      "beta": -0.016092127490556773,
+      "mean_spherical_km_s": [
+        1.2495367299387479,
+        -2.4814517876262854,
+        -1.7467082277121546
+      ]
+    },
+    {
+      "component": "mw",
+      "n": 5500,
+      "weight": 5500.0,
+      "beta": -0.020523071413851346,
+      "mean_spherical_km_s": [
+        0.515185564792646,
+        1.4637965318344752,
+        -1.2338408676002672
+      ]
+    },
+    {
+      "component": "lmc",
+      "n": 297,
+      "weight": 297.0,
+      "beta": 0.11234183664732211,
+      "mean_spherical_km_s": [
+        14.848632380792463,
+        -75.54160585171414,
+        -11.244251933487863
+      ]
+    }
+  ],
+  "scope": "Kinematic snapshot analysis; no detector response, local density inference, or independent-sample uncertainty estimate.",
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "dependencies": {
+      "numpy": "2.5.3",
+      "h5py": "3.16.0",
+      "numba": "0.68.0",
+      "matplotlib": "3.11.2",
+      "pillow": "12.3.0"
+    }
+  },
+  "source_sha256": {
+    "__init__.py": "461346762406034fb3b2eee4c330d7eed30312b31da2b4201a6d8b5fa65544d8",
+    "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "analysis.py": "b7eeaf0f3b48fc818636c26f4ef1c74cf9f551870474b1241a45a724d02ffef7",
+    "backends.py": "9a183dae5056f5b8b86e7007e71c8b032c1a9617b4f61765951e5e76688babb1",
+    "benchmark.py": "7cdfe87c298a0db451d305a7464a02cf50e29dec736600337be3c848b85563cd",
+    "cli.py": "6a67b3a6019b7bd66f64a9c2f9654fffa10a52baee5993dfe05bfbca2c83f200",
+    "importing.py": "b75a9dd0a3964189d79df6cfd80e2454036713117ffb4d72f369cb12fce12eb6",
+    "io.py": "7732b2a9fe6f8236f441e5b5977f4f0c4316cf0e46dadff3c2291400ae4fa70f",
+    "physics.py": "40f2c450459cd068b7a4cae4c2965f457c1384f1e1eaeda0324cf9dfdcacc665",
+    "plotting.py": "1e65aba4557e8e578f00fdedba5babc12a30018bcac0d152716d9e87a7fd959a",
+    "synthetic.py": "191ff74cd8e6619d8a86bbbd3bf013827b17a6c26da3aa77a3f54badd2a0bf1b"
+  }
+}
