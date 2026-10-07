@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lmc-auriga"
+version = "0.1.0"
+description = "Reproducible halo velocity analysis with explicit frames, units and validation"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = ["numpy>=1.24", "h5py>=3.8"]
+
+[project.optional-dependencies]
+plot = ["matplotlib>=3.7"]
+parallel = ["numba>=0.60"]
+test = ["pytest>=8"]
+
+[project.scripts]
+lmc-auriga = "lmc_auriga.cli:main"
+
+[project.urls]
+Repository = "https://github.com/nimaronaghi/LMC_AURIGA"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["lmc_auriga*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

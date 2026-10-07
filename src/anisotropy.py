@@ -1,41 +1,21 @@
-"""Utility functions related to velocity anisotropy."""
+"""Compatibility adapter for the historical 14-column anisotropy API.
 
-from typing import Sequence
+New code should call ``lmc_auriga.physics.anisotropy`` with an explicit N x 3
+array of spherical velocity components. No notebook DataFrame schema is guessed.
+"""
 
+import numpy as np
 
-def _sample_std(values: Sequence[float]) -> float:
-    """Return the sample standard deviation of *values*."""
-    n = len(values)
-    if n < 2:
-        raise ValueError("sample_std requires at least two data points")
-    mean = sum(values) / n
-    var = sum((x - mean) ** 2 for x in values) / (n - 1)
-    return var ** 0.5
+from .lmc_auriga.physics import anisotropy as _anisotropy
 
 
-def anisotropy(dataset: Sequence[Sequence[float]]) -> float:
-    """Compute the anisotropy parameter β for *dataset*.
+def anisotropy(dataset):
+    """Compute beta from historical zero-based columns 11, 12, and 13.
 
-    Parameters
-    ----------
-    dataset : sequence of sequences
-        Each inner sequence must have at least 14 elements. Columns 11, 12 and
-        13 correspond to ``v_r``, ``v_theta`` and ``v_phi`` respectively
-        (0-based indexing).
-
-    Returns
-    -------
-    float
-        The velocity anisotropy parameter β.
+    Require at least fourteen columns, preserving the original public schema.
+    Component validation and the estimator are shared with the scientific core.
     """
-
-    vr = [row[11] for row in dataset]
-    vth = [row[12] for row in dataset]
-    vphi = [row[13] for row in dataset]
-
-    sigma_vr = _sample_std(vr)
-    sigma_vth = _sample_std(vth)
-    sigma_vphi = _sample_std(vphi)
-
-    return 1 - (sigma_vth ** 2 + sigma_vphi ** 2) / (2 * sigma_vr ** 2)
-
+    dataset = np.asarray(dataset)
+    if dataset.ndim != 2 or dataset.shape[1] < 14:
+        raise ValueError("legacy dataset must have shape (N, >=14); velocity columns are 11:14")
+    return _anisotropy(dataset[:, 11:14])
